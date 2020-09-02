@@ -1,0 +1,83 @@
+name: spitest
+version: 0.0.0.0
+synopsis: Use Linux spidev to send test patterns on a SPI bus
+description: Use Linux spidev to send test patterns on a SPI bus
+github: vkleen/spitest
+license: BSD-3-Clause
+author: Viktor Kleen
+maintainer: viktor@kleen.org
+copyright: 2020 Viktor Kleen
+category: Utility
+
+ghc-options:
+  - -Wall
+  - -threaded
+  - -rtsopts
+  - -with-rtsopts=-N
+  - -Wincomplete-uni-patterns
+  - -Wincomplete-record-updates
+  - -Wcompat
+  - -Widentities
+  - -Wredundant-constraints
+  - -fhide-source-paths
+  - -Wmissing-export-lists
+  - -Wno-missing-methods
+  - -Wno-type-defaults
+
+default-extensions:
+  - AllowAmbiguousTypes
+  - ApplicativeDo
+  - DataKinds
+  - DefaultSignatures
+  - DeriveAnyClass
+  - DeriveFunctor
+  - DeriveGeneric
+  - DerivingStrategies
+  - DerivingVia
+  - DuplicateRecordFields
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
+  - InstanceSigs
+  - KindSignatures
+  - LambdaCase
+  - MultiParamTypeClasses
+  - NoMonomorphismRestriction
+  - OverloadedLabels
+  - OverloadedStrings
+  - PolyKinds
+  - QuasiQuotes
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TupleSections
+  - TypeApplications
+  - TypeFamilies
+  - TypeOperators
+
+dependencies:
+  - name: base
+    mixin:
+      - hiding (Prelude)
+  - name: relude
+    mixin:
+      - (Relude as Prelude)
+      - (Relude.Unsafe as Unsafe)
+
+  - base16
+  - bytestring
+  - bytestring-to-vector
+  - Cabal
+  - finite-typelits
+  - formatting
+  - inline-c
+  - lens
+  - text
+  - unix
+  - vector
+  - vector-sized
+
+executable:
+  main: Main.hs
+  source-dirs: spitest

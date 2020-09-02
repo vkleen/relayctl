@@ -1,0 +1,6 @@
+cradle:
+  cabal:
+    component: "exe:spitest"
+
+dependencies:
+  - package.yaml
