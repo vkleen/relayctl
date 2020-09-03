@@ -1,4 +1,11 @@
-module SPIDev.Types where
+module SPIDev.Types
+  ( TransferParameters (..),
+    defaultTransferParameters,
+    SPIDev(..),
+    SPIDevParams(..),
+    defaultSPIDevParams,
+  )
+where
 
 import System.Posix.ByteString
 
@@ -26,14 +33,14 @@ defaultTransferParameters =
 newtype SPIDev s = SPIDev {_fd :: Fd}
 
 data SPIDevParams = SPIDevParams
-  { spiClockPhase :: Bool
-  , spiClockPolarity :: Bool
+  { spiClockPhase :: Bool,
+    spiClockPolarity :: Bool
   }
   deriving (Show)
 
 defaultSPIDevParams :: SPIDevParams
 defaultSPIDevParams =
   SPIDevParams
-    { spiClockPhase = False
-    , spiClockPolarity = False
+    { spiClockPhase = False,
+      spiClockPolarity = False
     }

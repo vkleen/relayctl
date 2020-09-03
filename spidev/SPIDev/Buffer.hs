@@ -1,12 +1,9 @@
-{-# LANGUAGE NoStarIsType #-}
-{-# LANGUAGE UndecidableInstances #-}
-
-module SPIDev.Buffer where
+module SPIDev.Buffer (SPIBuffer(..), SomeSPIBuffer(..), SPIWord) where
 
 import qualified Data.Vector.Storable.Sized as V
 import Foreign.Storable
-import GHC.TypeLits
 import GHC.Exts
+import GHC.TypeLits
 import Unsafe (fromJust)
 
 type family Word' (s :: Nat) :: Type where

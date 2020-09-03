@@ -1,7 +1,6 @@
-{-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE QuasiQuotes #-}
-module SPIDev.Send where
+module SPIDev.Send (send_, send, setParameters) where
 
 import SPIDev.Types
 import SPIDev.Buffer

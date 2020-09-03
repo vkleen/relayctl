@@ -1,6 +1,9 @@
 cradle:
   cabal:
-    component: "exe:spitest"
+    - path: "./relayd"
+      component: "relayctl:exe:relayd"
+    - path: "./spidev"
+      component: "lib:relayctl"
 
 dependencies:
   - package.yaml

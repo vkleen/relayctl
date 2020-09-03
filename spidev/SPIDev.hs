@@ -1,20 +1,19 @@
-{-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE NoStarIsType #-}
-module SPIDev ( module SPIDev.Buffer
-              , module SPIDev.Send
-              , module SPIDev.Types
-              , openSPIDev
-              , openSPIDev'
-              , closeSPIDev
-              , withSPIDev
-              , withSPIDev'
-              ) where
+module SPIDev
+  ( module SPIDev.Buffer,
+    module SPIDev.Send,
+    module SPIDev.Types,
+    openSPIDev,
+    openSPIDev',
+    closeSPIDev,
+    withSPIDev,
+    withSPIDev',
+  )
+where
 
+import Control.Exception (bracket)
 import SPIDev.Buffer
 import SPIDev.Send
 import SPIDev.Types
-import Control.Exception (bracket)
 import System.Posix.ByteString
 
 openSPIDev :: forall s. RawFilePath -> IO (SPIDev s)

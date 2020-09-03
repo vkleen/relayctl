@@ -45,6 +45,7 @@ let
           url = "https://github.com/bubba/brittany.git";
         }
       ];
+      ghc = pkgs.buildPackages.pkgs.haskell-nix.compiler."${ghcVersion}";
       stackYaml = "stack-8.8.4.yaml";
       pkg-def-extras = [
       ];
