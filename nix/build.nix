@@ -39,13 +39,13 @@ let
         inherit (sources.haskell-language-server) rev fetchSubmodules sha256;
       };
       cache = [
-        { name = "cabal-helper";
-          rev = "79a5608778493bf32e74b54bbf1ea2729941e50f";
-          sha256 = "1jsiwg94yy8pwhzi3z6ayja9qdgf7fl6xn1h9z681j6lhbx225f8";
-          url = "https://github.com/DanielG/cabal-helper.git";
+        { name = "brittany";
+          rev = "c59655f10d5ad295c2481537fc8abf0a297d9d1c";
+          sha256 = "1rkk09f8750qykrmkqfqbh44dbx1p8aq1caznxxlw8zqfvx39cxl";
+          url = "https://github.com/bubba/brittany.git";
         }
       ];
-      stackYaml = "stack-8.10.1.yaml";
+      stackYaml = "stack-8.8.4.yaml";
       pkg-def-extras = [
       ];
       modules = [ ({config, ...}: {
@@ -87,7 +87,7 @@ in rec {
 
   shell = hsPkgs.shellFor {
     packages = ps: with ps; [
-      spitest
+      relayctl
     ];
 
     additional = ps: with ps; [
@@ -98,7 +98,7 @@ in rec {
     tools = {
       "hlint" = "3.1.6";
       "cabal-install" = "3.2.0.0";
-      "niv" = "0.2.13";
+      # "niv" = "0.2.16";
       "ghcid" = "0.8.7";
       "hpack" = "0.34.2";
       "ormolu" = "0.1.2.0";

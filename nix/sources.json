@@ -3,8 +3,8 @@
         "fetchSubmodules": true,
         "ref": "master",
         "repo": "https://github.com/haskell/haskell-language-server.git",
-        "rev": "751428cd7dcfa5ac3ed93a8b28b9aafb8339b343",
-        "sha256": "1d5akyxhahqc8p6k8x896gl8569hkf6d0rbp9sbh06cx3fqp8wgy",
+        "rev": "bf5795becf55cd64e8a1fc83a0766a7baaa6eeef",
+        "sha256": "1zv5bq2glzn77p34ajl4grfzrg6gj106cy2al06h4r6krhg4wmin",
         "type": "git"
     },
     "haskell.nix": {
@@ -13,10 +13,10 @@
         "homepage": "https://input-output-hk.github.io/haskell.nix",
         "owner": "vkleen",
         "repo": "haskell.nix",
-        "rev": "4db18f27944c31690915361e23ab683474545b47",
-        "sha256": "1mahx5akym72nnh37qfzgzsx73ypvhg93hkrmi44b1s817jqvm57",
+        "rev": "aabcb7ec2c2c4bece9a0a101af82d5db205b07a4",
+        "sha256": "08sf4k9w6gn2scp86bcq0j27akjrxykf8dziy12dm61aqhwy948q",
         "type": "tarball",
-        "url": "https://github.com/vkleen/haskell.nix/archive/4db18f27944c31690915361e23ab683474545b47.tar.gz",
+        "url": "https://github.com/vkleen/haskell.nix/archive/aabcb7ec2c2c4bece9a0a101af82d5db205b07a4.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "niv": {
@@ -37,10 +37,10 @@
         "homepage": "https://github.com/NixOS/nixpkgs",
         "owner": "vkleen",
         "repo": "nixpkgs",
-        "rev": "a0c07ca2396446b553e66b8334e969c036e21a58",
-        "sha256": "1jfrkprkds8mxkadmswxwmqajbclhch49083ibsixd2invq5bs6w",
+        "rev": "0a5f465b26299c124308431dd06a325fe6c86cb9",
+        "sha256": "1jkqfr2rlv3knx5nh5wcrjvwh3imax15g0yv0skc81z6wnfa5qah",
         "type": "tarball",
-        "url": "https://github.com/vkleen/nixpkgs/archive/a0c07ca2396446b553e66b8334e969c036e21a58.tar.gz",
+        "url": "https://github.com/vkleen/nixpkgs/archive/0a5f465b26299c124308431dd06a325fe6c86cb9.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

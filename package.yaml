@@ -1,8 +1,8 @@
-name: spitest
+name: relayctl
 version: 0.0.0.0
-synopsis: Use Linux spidev to send test patterns on a SPI bus
-description: Use Linux spidev to send test patterns on a SPI bus
-github: vkleen/spitest
+synopsis: Control my relays
+description: Control my relays
+github: vkleen/relayctl
 license: BSD-3-Clause
 author: Viktor Kleen
 maintainer: viktor@kleen.org
@@ -78,6 +78,9 @@ dependencies:
   - vector
   - vector-sized
 
+library:
+  source-dirs: spidev
+
 executable:
   main: Main.hs
-  source-dirs: spitest
+  source-dirs: relayd
