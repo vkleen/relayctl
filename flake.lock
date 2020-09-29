@@ -1,0 +1,59 @@
+{
+  "nodes": {
+    "haskell-nix": {
+      "locked": {
+        "lastModified": 1600046016,
+        "narHash": "sha256-MawuXtrwJQAqNBP5s6x2698HnVU3tJEqi4Lf3lL05sc=",
+        "owner": "input-output-hk",
+        "repo": "haskell.nix",
+        "rev": "f6663a8449f5e4a7393aa24601600c8f6e352c97",
+        "type": "github"
+      },
+      "original": {
+        "owner": "input-output-hk",
+        "repo": "haskell.nix",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1596626892,
+        "narHash": "sha256-VtLIoW2nYYdsJ/ycm0+TpTtq4b1Y2iNDg0zJN5KHRVk=",
+        "owner": "vkleen",
+        "repo": "nixpkgs",
+        "rev": "4e3b0097786afc2ffacc219c7beb5d1028c06911",
+        "type": "github"
+      },
+      "original": {
+        "owner": "vkleen",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "haskell-nix": "haskell-nix",
+        "nixpkgs": "nixpkgs",
+        "spidev": "spidev"
+      }
+    },
+    "spidev": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1599165531,
+        "narHash": "sha256-LmrMD0gHdLVOEzv71R0mkj+7m0Ij1SCJnP2gdBWOKcc=",
+        "owner": "vkleen",
+        "repo": "spidev",
+        "rev": "a610703e7af18528b4d69389c5e04d0837b5160e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "vkleen",
+        "repo": "spidev",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

@@ -11,18 +11,63 @@ _common: !include "./common.yaml"
 <<: *relude
 
 library:
-  source-dirs: spidev
+  source-dirs: relay-api
 
   dependencies:
-    - bytestring
-    - finite-typelits
-    - inline-c
+    - aeson
+    - vector-sized
+    - generic-lens
+    - lens
+    - servant
+    - text
+    - time
     - unix
     - vector
-    - vector-sized
 
 executables:
   relayd:
     <<: *default-exe-options
     main: Main.hs
     source-dirs: relayd
+    dependencies:
+      - relayctl
+      - servant
+      - finite-typelits
+      - servant-server
+      - fixed-vector
+      - warp
+      - containers
+      - stm
+      - spidev
+      - unix
+      - lens
+      - generic-lens
+      - async
+      - fast-logger
+      - safe-exceptions
+      - stm-delay
+      - text
+      - vector-sized
+      - network
+      - wai
+      - bytestring
+  relayctl:
+    <<: *default-exe-options
+    main: Main.hs
+    source-dirs: relayctl
+    dependencies:
+      - relayctl
+      - servant
+      - servant-client
+      - servant-client-core
+      - http-client
+      - aeson
+      - optparse-applicative
+      - optparse-generic
+      - containers
+      - text
+      - ansi-wl-pprint
+      - vector-sized
+      - unix
+      - network
+      - bytestring

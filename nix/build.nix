@@ -1,16 +1,26 @@
-{ ghcVersion ? "ghc884" }:
+args@{ ghcVersion ? "ghc884", ... }:
 let
   sources = import ./sources.nix;
-  haskell-nix-overlays = (import sources."haskell.nix" { sourcesOverride = {}; }).overlays;
+  haskell-nix-overlays = let overlays = [
+    (import sources."haskell.nix" { sourcesOverride = {}; }).allOverlays.combined-eval-on-build
+    ( final: prev: {
+        haskell-nix = prev.haskell-nix // {
+          inherit overlays;
+          # sources = prev.haskell-nix.sources // sourcesOverride;
+        };
+      } )
+    ];
+    in overlays;
   pkgs = import sources.nixpkgs {
-    config = {
-      allowUnsupportedSystem = true;
+    overlays = haskell-nix-overlays;
+  };
+  aarch64-pkgs = import sources.nixpkgs {
+    overlays = haskell-nix-overlays;
+    crossSystem = null;
+    localSystem = {
+      system = "aarch64-linux";
+      platform = lib.systems.platforms.aarch64-multiplatform;
     };
-    overlays = haskell-nix-overlays ++
-      [ (self: super: {
-          "libusb-1.0" = super.libusb1;
-        })
-      ];
   };
   inherit (pkgs) lib;
 
@@ -38,20 +48,17 @@ let
         url = sources.haskell-language-server.repo;
         inherit (sources.haskell-language-server) rev fetchSubmodules sha256;
       };
-      cache = [
-        { name = "brittany";
-          rev = "c59655f10d5ad295c2481537fc8abf0a297d9d1c";
-          sha256 = "1rkk09f8750qykrmkqfqbh44dbx1p8aq1caznxxlw8zqfvx39cxl";
-          url = "https://github.com/bubba/brittany.git";
-        }
-      ];
-      ghc = pkgs.buildPackages.pkgs.haskell-nix.compiler."${ghcVersion}";
+      sha256map = {
+        "https://github.com/bubba/brittany.git"."c59655f10d5ad295c2481537fc8abf0a297d9d1c" = "1rkk09f8750qykrmkqfqbh44dbx1p8aq1caznxxlw8zqfvx39cxl";
+      };
       stackYaml = "stack-8.8.4.yaml";
+      compiler-nix-name = ghcVersion;
       pkg-def-extras = [
       ];
       modules = [ ({config, ...}: {
         reinstallableLibGhc = true;
         inherit nonReinstallablePkgs;
+        compiler.nix-name = lib.mkForce ghcVersion;
       }) ];
     };
   in {
@@ -60,35 +67,39 @@ let
 
   haskell = let v' = ghcVersion; in { ghcVersion ? v' }: pkgs: pkgs.haskell-nix.stackProject {
     src = pkgs.haskell-nix.haskellLib.cleanGit { src = ../.; name = "relayctl"; };
-    ghc = pkgs.buildPackages.pkgs.haskell-nix.compiler."${ghcVersion}";
+    sha256map = {
+      "https://github.com/vkleen/spidev.git"."a610703e7af18528b4d69389c5e04d0837b5160e" = "1ir9iqap987xkj4j1m938advngwj4qfxbyrv2d7bax07907wqsif";
+    };
+    compiler-nix-name = ghcVersion;
     pkg-def-extras = [
     ];
     modules = [ ({config, ...}: {
+      compiler.nix-name = lib.mkForce ghcVersion;
       reinstallableLibGhc = true;
       inherit nonReinstallablePkgs;
       configureFlags = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isMusl [
         "--ghc-option=-optl=-static"
-        "--extra-lib-dirs=${pkgs.gmp}/lib"
+        "--ghc-option=-optl=-pthread"
+        "--extra-lib-dirs=${pkgs.gmp.override { withStatic = true; }}/lib"
         "--extra-lib-dirs=${pkgs.zlib_both}/lib"
-        "--extra-lib-dirs=${pkgs.libffi}/lib"
+        "--disable-executable-dynamic"
+        "--disable-shared"
         "--enable-executable-stripping"
       ];
     }) ];
   };
 in rec {
+  inherit pkgs;
   hsPkgs = haskell { ghcVersion = "ghc884"; } pkgs;
   staticPkgs = haskell { ghcVersion = "ghc884"; } (pkgs.pkgsCross.musl64.extend (import ./static.nix));
-  boronPkgs = haskell { ghcVersion = "ghc884"; } pkgs.pkgsCross.armv7l-hf-multiplatform;
-    # ((pkgs.pkgsCross.armv7l-hf-multiplatform.pkgsMusl.extend (self: super: {
-    #     bash-completion = super.bash-completion.overrideAttrs (_: {
-    #       doCheck = false;
-    #     });
-    #   })).extend (import ./static.nix));
+  boronPkgs = haskell { ghcVersion = "ghc884"; } aarch64-pkgs;
+
   inherit (hie-pkgs) haskell-language-server;
 
   shell = hsPkgs.shellFor {
     packages = ps: with ps; [
       relayctl
+      spidev
     ];
 
     additional = ps: with ps; [
