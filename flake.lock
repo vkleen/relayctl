@@ -2,12 +2,13 @@
   "nodes": {
     "haskell-nix": {
       "locked": {
-        "lastModified": 1600046016,
-        "narHash": "sha256-MawuXtrwJQAqNBP5s6x2698HnVU3tJEqi4Lf3lL05sc=",
-        "owner": "input-output-hk",
-        "repo": "haskell.nix",
-        "rev": "f6663a8449f5e4a7393aa24601600c8f6e352c97",
-        "type": "github"
+        "lastModified": 1606956388,
+        "narHash": "sha256-KCEiy3jAGw+p4ugkd3qFN1g6GiUEHSkGwFNVlFF/gw4=",
+        "ref": "master",
+        "rev": "9c3707b42e9a77661e226763f9b667c9baa3cc17",
+        "revCount": 1292,
+        "type": "git",
+        "url": "file:///home/vkleen/src/haskell.nix"
       },
       "original": {
         "owner": "input-output-hk",
@@ -17,11 +18,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1596626892,
-        "narHash": "sha256-VtLIoW2nYYdsJ/ycm0+TpTtq4b1Y2iNDg0zJN5KHRVk=",
+        "lastModified": 1605202555,
+        "narHash": "sha256-shUmH1i3HE4qsbgJH/tl653jfoD8/wuLvo5rQI62yvc=",
         "owner": "vkleen",
         "repo": "nixpkgs",
-        "rev": "4e3b0097786afc2ffacc219c7beb5d1028c06911",
+        "rev": "d1ca119619e7d2e51485325335ea0b1924ee4fe3",
         "type": "github"
       },
       "original": {
