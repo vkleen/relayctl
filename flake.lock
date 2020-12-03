@@ -4,11 +4,10 @@
       "locked": {
         "lastModified": 1606956388,
         "narHash": "sha256-KCEiy3jAGw+p4ugkd3qFN1g6GiUEHSkGwFNVlFF/gw4=",
-        "ref": "master",
+        "owner": "vkleen",
+        "repo": "haskell.nix",
         "rev": "9c3707b42e9a77661e226763f9b667c9baa3cc17",
-        "revCount": 1292,
-        "type": "git",
-        "url": "file:///home/vkleen/src/haskell.nix"
+        "type": "github"
       },
       "original": {
         "owner": "input-output-hk",
