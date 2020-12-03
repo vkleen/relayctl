@@ -40,6 +40,7 @@
       };
       pkg-def-extras = [
       ];
+      materialized = ./materialized;
       modules = [ ({config, ...}: {
         reinstallableLibGhc = true;
         inherit nonReinstallablePkgs;
