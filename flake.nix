@@ -15,7 +15,7 @@
 
   outputs = { self, nixpkgs, haskell-nix, ... }: let
     inherit (nixpkgs) lib;
-    pkgs = system: (nixpkgs.legacyPackages."${system}").extend haskell-nix.overlay;
+    pkgs' = system: (nixpkgs.legacyPackages."${system}").extend haskell-nix.overlay;
 
     nonReinstallablePkgs = [
       "Cabal"
@@ -33,13 +33,16 @@
       "stm" "terminfo"
     ];
 
-    haskell = system: (pkgs system).haskell-nix.stackProject {
+    haskell = system: let
+      pkgs = pkgs' system;
+    in pkgs.haskell-nix.stackProject {
       src = ./.;
       sha256map = {
         "https://github.com/vkleen/spidev.git"."a610703e7af18528b4d69389c5e04d0837b5160e" = "1ir9iqap987xkj4j1m938advngwj4qfxbyrv2d7bax07907wqsif";
       };
       pkg-def-extras = [
       ];
+      stack-sha256 = "1wd4izz1ya7nf68r53pgm9hch891qsyb02099rx81c8dv101m3n7";
       materialized = ./materialized;
       modules = [ ({config, ...}: {
         reinstallableLibGhc = true;
@@ -60,5 +63,7 @@
     packages.x86_64-linux.relayd = (haskell "x86_64-linux").relayctl.components.exes.relayd;
 
     packages.aarch64-linux.relayd = (haskell "aarch64-linux").relayctl.components.exes.relayd;
+
+    materializedSha = (haskell "x86_64-linux").relayctl;
   };
 }
