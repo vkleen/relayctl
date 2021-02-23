@@ -1,8 +1,0 @@
-resolver: lts-16.12
-
-packages:
-  - .
-
-extra-deps:
-  - git: https://github.com/vkleen/spidev.git
-    commit: a610703e7af18528b4d69389c5e04d0837b5160e

@@ -1,3 +1,7 @@
 packages:
   relayctl.cabal
-  ../spidev/spidev.cabal
+
+source-repository-package
+  type: git
+  location: https://github.com/vkleen/spidev.git
+  tag: 6a2ad9cd12ae04903ae3806d3dc76a3e855ad7ef

@@ -5,10 +5,71 @@ description: Control my relays
 github: vkleen/relayctl
 category: Utility
 
-_common: !include "./common.yaml"
-<<: *legal
-<<: *default-ghc-options
-<<: *relude
+license: BSD-3-Clause
+author: Viktor Kleen
+maintainer: viktor@kleen.org
+copyright: 2020 Viktor Kleen
+
+ghc-options:
+  - -Wall
+  - -Wincomplete-uni-patterns
+  - -Wincomplete-record-updates
+  - -Wcompat
+  - -Widentities
+  - -Wredundant-constraints
+  - -fhide-source-paths
+  - -Wmissing-export-lists
+  - -Wno-missing-methods
+  - -Wno-type-defaults
+default-extensions:
+  - AllowAmbiguousTypes
+  - ApplicativeDo
+  - BlockArguments
+  - DataKinds
+  - DefaultSignatures
+  - DeriveAnyClass
+  - DeriveFunctor
+  - DeriveGeneric
+  - DerivingStrategies
+  - DerivingVia
+  - DuplicateRecordFields
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
+  - InstanceSigs
+  - KindSignatures
+  - LambdaCase
+  - MultiParamTypeClasses
+  - NoMonomorphismRestriction
+  - NoStarIsType
+  - OverloadedLabels
+  - OverloadedStrings
+  - PolyKinds
+  - QuasiQuotes
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TupleSections
+  - TypeApplications
+  - TypeFamilies
+  - TypeOperators
+  - UndecidableInstances
+
+dependencies:
+  - name: base
+    mixin:
+      - hiding (Prelude)
+  - name: relude
+    mixin:
+      - (Relude as Prelude)
+      - (Relude.Unsafe as Unsafe)
+
+_default-exe-options: &default-exe-options
+  ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
 
 library:
   source-dirs: relay-api
@@ -51,6 +112,8 @@ executables:
       - network
       - wai
       - bytestring
+      - net-mqtt
+      - dns
   relayctl:
     <<: *default-exe-options
     main: Main.hs
