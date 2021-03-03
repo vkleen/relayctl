@@ -25,7 +25,7 @@
     forAllSystems' = f: lib.mapAttrs f inputs.nixpkgs.legacyPackages;
     forAllSystems = f: lib.mapAttrs f pkgs;
 
-    pkgs = forAllSystems' (system: pkgs: pkgs.appendOverlays (
+    overlays = system:
       [ (haskell-nix.overlays.combined)
         (final: prev: {
           evalPackages = (import final.path {
@@ -41,10 +41,20 @@
             };
           };
         })
-      ]
-    ));
+      ];
 
-    haskell = forAllSystems (system: p:
+    pkgs = forAllSystems' (system: pkgs: pkgs.appendOverlays (overlays system));
+
+    pkgsCross = {
+      aarch64-multiplatform = forAllSystems' (system: pkgs: import pkgs.path {
+        inherit system;
+        crossSystem = lib.systems.examples.aarch64-multiplatform;
+        overlays = overlays system;
+        crossOverlays = overlays system;
+      });
+    };
+
+    haskell' = p:
       p.haskell-nix.project {
         src = ./.;
         sha256map = {
@@ -55,7 +65,9 @@
         compiler-nix-name = "ghc8104";
         materialized = ./materialized;
         index-state = "2021-02-23T00:00:00Z";
-      });
+      };
+
+    haskell = forAllSystems (_: p: haskell' p);
 
     devShell = forAllSystems (system: p:
       haskell.${system}.shellFor {
@@ -81,6 +93,8 @@
 
     packages.x86_64-linux.relayctl = haskell."x86_64-linux".hsPkgs.relayctl.components.exes.relayctl;
     packages.x86_64-linux.relayd = haskell."x86_64-linux".hsPkgs.relayctl.components.exes.relayd;
+
+    packages.x86_64-linux.cross.aarch64-multiplatform.relayd = (haskell' pkgsCross.aarch64-multiplatform.x86_64-linux).relayctl.components.exes.relayd;
 
     packages.aarch64-linux.relayd = haskell."aarch64-linux".hsPkgs.relayctl.components.exes.relayd;
     packages.aarch64-linux.relayctl = haskell."aarch64-linux".hsPkgs.relayctl.components.exes.relayctl;
