@@ -76,6 +76,7 @@ library:
 
   dependencies:
     - aeson
+    - finite-typelits
     - vector-sized
     - generic-lens
     - lens
@@ -114,6 +115,15 @@ executables:
       - bytestring
       - net-mqtt
       - dns
+      - dlist
+      - aeson
+      - aeson-pretty
+      - network-uri
+      - tls
+      - connection
+      - data-default-class
+      - base64-bytestring
+      - x509-validation
   relayctl:
     <<: *default-exe-options
     main: Main.hs

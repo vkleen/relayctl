@@ -3,11 +3,13 @@
 {-# LANGUAGE BinaryLiterals #-}
 {-# LANGUAGE NumDecimals #-}
 
-module TLE8108 where
+module TLE8108 (sendCommand) where
 
 import qualified API as A
 import Config
 import Data.Bits
+import Control.Lens (_1)
+import Control.Lens.Operators
 import qualified Data.Text as T
 import qualified Data.Vector.Storable.Sized as VS
 import qualified Data.Vector.Sized as VB
@@ -19,17 +21,19 @@ import Unsafe (fromJust)
 challenge :: [Word8]
 challenge = [0x0b, 0xad, 0xf0, 0x0d]
 
-assembleBuffer :: A.Interface -> SPIBuffer 8 6
-assembleBuffer A.Interface {ports = ps} =
+assembleBuffer :: A.InterfaceCommand -> SPIBuffer 8 6
+assembleBuffer (A.InterfaceCommand ps) =
   Prelude.fromList $
     challenge
       ++ [ fromIntegral $ (msg .&. 0xff00) `shiftR` 8,
            fromIntegral $ (msg .&. 0x00ff)
          ]
   where
+    onoff a _ A.On  = a
+    onoff _ b A.Off = b
+
     bits :: VB.Vector 8 Word16
-    bits = flip fmap ps \A.Port {state = s} ->
-      bool 0b11 0b10 s
+    bits = onoff 0b11 0b10 <$> ps
     msg :: Word16
     msg = VB.ifoldl' (\a n x -> a .|. (x `shiftL` (2 * fromIntegral n))) (0 :: Word16) bits
 
@@ -49,7 +53,7 @@ diagnose r int = VS.generate @8 (\i -> statusWord `extract2` (2 * fromIntegral i
                            0b11 -> A.Okay
                            _ -> bug'
                         )
-               & VB.imap (\n d -> ((A.ports int) `VB.index` n) { A.diagnostic = d })
+               & VB.imap (\n d -> (A.ports int `VB.index` n) & _1 .~ d)
                & \p' -> int { A.ports = p' }
   where
     statusWord :: Word16
@@ -60,32 +64,32 @@ diagnose r int = VS.generate @8 (\i -> statusWord `extract2` (2 * fromIntegral i
 
 turnOffFailures :: A.Interface -> A.Interface
 turnOffFailures i@A.Interface{ifStatus=A.Disconnected, ports=ps} =
-  i { A.ports = VB.map reset ps }
-  where reset :: A.Port -> A.Port
-        reset p = p { A.diagnostic = A.Okay, A.state = False }
+  i { A.ports = VB.map (const (A.Unknown, A.Off)) ps }
 
 turnOffFailures i@A.Interface{ports=ps} =
   i {A.ports = VB.map turnOff ps}
   where
-    turnOff :: A.Port -> A.Port
-    turnOff p@A.Port{ diagnostic=A.Okay } = p
-    turnOff p@A.Port{ diagnostic=_ } = p { A.state = False }
+    turnOff :: (A.Diagnostic, A.PortState) -> (A.Diagnostic, A.PortState)
+    turnOff p@(A.Okay, _) = p
+    turnOff (d, _) = (d, A.Off)
 
 prettyBuffer :: SPIBuffer 8 n -> Text
 prettyBuffer b = VS.foldl' (\a x -> a <> T.pack (printf "%02x" x)) (T.pack "") (coerce b)
 
-applyState :: SPIDev s -> A.Interface -> App A.Interface
-applyState dev new = do
-  let msg = assembleBuffer new
+sendCommand :: SPIDev s -> A.InterfaceCommand -> App (A.Interface -> A.Interface)
+sendCommand dev cmd = do
+  let msg = assembleBuffer cmd
   _ <- doSend msg
   r <- doSend msg
-  pure $
-    new & sniffCheck r & diagnose r & turnOffFailures
+  pure \old ->
+    A.applyCommand cmd old & sniffCheck r & diagnose r & turnOffFailures
 
-  where doSend msg = liftIO $ send msg
-                                   defaultTransferParameters { speedHz = 1e6
-                                                             , txWidth = 1
-                                                             , rxWidth = 1
-                                                             }
-                                   dev
+  where doSend msg = do
+          logDebug $ prettyBuffer msg
+          liftIO $ send msg
+                        defaultTransferParameters { speedHz = 1e6
+                                                  , txWidth = 1
+                                                  , rxWidth = 1
+                                                  }
+                        dev
 

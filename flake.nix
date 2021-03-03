@@ -59,7 +59,7 @@
     devShell = forAllSystems (system: p:
       haskell.${system}.shellFor {
         packages = ps: with ps; [
-          relayctl spidev
+          relayctl spidev net-mqtt
         ];
         tools = {
           haskell-language-server = "latest";

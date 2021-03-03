@@ -32,3 +32,4 @@ stack.yaml.lock
 
 .gcroots
 result
+*.pem
