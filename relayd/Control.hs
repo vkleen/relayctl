@@ -80,7 +80,7 @@ startInterface onCommand ifCfg@InterfaceConfig{name = name, devicePath = path} =
           guard (c /= oldCmd) <|> waitDelay delay
           pure c
         when (newCmd /= oldCmd) $ do
-          logInfo $ "Interface state change command:\n"
+          logDebug $ "Interface state change command:\n"
                   <> toStrict (encodeToLazyText (commandDifference oldCmd newCmd))
         onCommand interface ifCfg newCmd
         go newCmd
