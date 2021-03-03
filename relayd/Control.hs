@@ -70,7 +70,7 @@ startInterface onCommand ifCfg@InterfaceConfig{name = name, devicePath = path} =
   commanded <- newTVarIO . A.InterfaceCommand $ VB.replicate A.Off
   cfg <- ask
   thread <- liftIO . async . flip runReaderT cfg $ do
-    logInfo $ "Starting mock interface controller for " <> coerce name <> " at " <> decodeUtf8 path
+    logInfo $ "Starting interface controller for " <> coerce name <> " at " <> decodeUtf8 path
     let
       go :: A.InterfaceCommand -> App ()
       go oldCmd = do
