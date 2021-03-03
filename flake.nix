@@ -53,7 +53,8 @@
         pkg-def-extras = [
         ];
         compiler-nix-name = "ghc8104";
-        # materialized = ./materialized;
+        materialized = ./materialized;
+        index-state = "2021-02-23T00:00:00Z";
       });
 
     devShell = forAllSystems (system: p:
