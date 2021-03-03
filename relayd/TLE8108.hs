@@ -33,7 +33,7 @@ assembleBuffer (A.InterfaceCommand ps) =
     onoff _ b A.Off = b
 
     bits :: VB.Vector 8 Word16
-    bits = onoff 0b11 0b10 <$> ps
+    bits = onoff 0b10 0b11 <$> ps
     msg :: Word16
     msg = VB.ifoldl' (\a n x -> a .|. (x `shiftL` (2 * fromIntegral n))) (0 :: Word16) bits
 
