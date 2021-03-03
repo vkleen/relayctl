@@ -25,6 +25,7 @@ module Network.MQTT.Client (
   ProtocolLevel(..), Property(..), SubOptions(..), subOptions, MessageCallback(..),
   -- * Running and waiting for the client.
   waitForClient,
+  runClient, runClientTLS,
   connectURI, isConnected,
   disconnect, normalDisconnect,
   -- * General client interactions.
