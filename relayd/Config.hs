@@ -22,6 +22,7 @@ import qualified Network.MQTT.Client as M
 data Config = Config
   { interfaces :: [InterfaceConfig]
   , mqttBroker :: M.MQTTConfig
+  , mqttPrefix :: Text
   , doLogInfo :: Text -> App ()
   , doLogDebug :: Text -> App ()
   }
@@ -54,12 +55,13 @@ data DeviceConfig = DeviceConfig
 
 type App = ReaderT Config IO
 
-makeConfig :: [InterfaceConfig] -> M.MQTTConfig -> IO Config
-makeConfig ics mqttBroker = do
+makeConfig :: [InterfaceConfig] -> Text -> M.MQTTConfig -> IO Config
+makeConfig ics prefix mqttBroker = do
   stdoutLogger <- newStdoutLoggerSet defaultBufSize
   pure . deepseq ics $
     Config { interfaces = ics
            , mqttBroker = mqttBroker
+           , mqttPrefix = prefix
            , doLogInfo = liftIO . pushLogStrLn stdoutLogger . toLogStr
            , doLogDebug = const (pure ())
            }

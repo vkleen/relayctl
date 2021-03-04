@@ -18,6 +18,7 @@ import qualified Data.Text as T
 import System.Timeout (timeout)
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.Map.Strict as M
+import Data.List (stripPrefix)
 
 type IfMap = M.Map A.InterfaceName InterfaceState
 
@@ -81,18 +82,19 @@ interfacePublishThread :: InterfaceState -> App ()
 interfacePublishThread InterfaceState{interface = iVar, commanded = cVar} = do
   (i, c) <- atomically do
     (,) <$> readTVar iVar <*> readTVar cVar
-  withMQTT Nothing (Just $ lw i) do
+  prefix <- L.view #mqttPrefix
+  withMQTT Nothing (Just $ lw prefix i) do
     go i c
 
   where
-    lw :: A.Interface -> MQ.LastWill
-    lw i = MQ.LastWill { MQ._willRetain = True
-                      , MQ._willQoS = MQ.QoS0
-                      , MQ._willTopic = "relays/interfaces/" <> i ^. #name . #_InterfaceName . L.to encodeUtf8
-                                                            <> "/controller_alive"
-                      , MQ._willMsg = "false"
-                      , MQ._willProps = []
-                      }
+    lw :: Text -> A.Interface -> MQ.LastWill
+    lw prefix i = MQ.LastWill { MQ._willRetain = True
+                              , MQ._willQoS = MQ.QoS0
+                              , MQ._willTopic = encodeUtf8 prefix <> "/interfaces/" <> i ^. #name . #_InterfaceName . L.to encodeUtf8
+                                                                  <> "/controller_alive"
+                              , MQ._willMsg = "false"
+                              , MQ._willProps = []
+                              }
     go i c = do
       publishStatus i c
       (i', c') <- atomically do
@@ -105,20 +107,21 @@ interfacePublishThread InterfaceState{interface = iVar, commanded = cVar} = do
     publishStatus :: A.Interface -> A.InterfaceCommand -> MQTT ()
     publishStatus i c = do
       cl <- L.view #mqttClient
+      prefix <- L.view $ #appConfig . #mqttPrefix
       liftIO $ MQ.publishq cl
-                          ("relays/interfaces/" <> i ^. #name . #_InterfaceName <> "/commanded")
+                          (prefix <> "/interfaces/" <> i ^. #name . #_InterfaceName <> "/commanded")
                           (encodingToLazyByteString $ toEncoding c)
                           True
                           MQ.QoS0
                           [ ]
       liftIO $ MQ.publishq cl
-                          ("relays/interfaces/" <> i ^. #name . #_InterfaceName)
+                          (prefix <> "/interfaces/" <> i ^. #name . #_InterfaceName)
                           (encodingToLazyByteString $ toEncoding i)
                           True
                           MQ.QoS0
                           [ ]
       liftIO $ MQ.publishq cl
-                          ("relays/interfaces/" <> i ^. #name . #_InterfaceName <> "/controller_alive")
+                          (prefix <> "/interfaces/" <> i ^. #name . #_InterfaceName <> "/controller_alive")
                           "true"
                           True
                           MQ.QoS0
@@ -127,15 +130,18 @@ interfacePublishThread InterfaceState{interface = iVar, commanded = cVar} = do
 setupSubscriptions :: MQTT ()
 setupSubscriptions = do
   client <- L.view #mqttClient
-  void . liftIO $ MQ.subscribe client [ ("relays/interfaces/+/change", MQ.subOptions ) ] []
+  prefix <- L.view $ #appConfig . #mqttPrefix
+  void . liftIO $ MQ.subscribe client [ (prefix <> "/interfaces/+/change", MQ.subOptions ) ] []
 
 data CommandTopic = InterfaceChange A.InterfaceName
   deriving (Generic, Show, Eq)
 
-parseTopic :: MQ.Topic -> Maybe CommandTopic
-parseTopic n = case T.splitOn "/" n of
-  ["relays", "interfaces", i, "change"] -> Just $ InterfaceChange (coerce i)
+parseTopic :: Text -> MQ.Topic -> Maybe CommandTopic
+parseTopic prefix n = case split n & stripPrefix (split prefix)  of
+  Just ["interfaces", i, "change"] -> Just $ InterfaceChange (coerce i)
   _ -> Nothing
+
+  where split = T.splitOn "/"
 
 processCommand  :: IfMap -> CommandTopic -> BL.ByteString -> MQTT ()
 processCommand ifMap (InterfaceChange i) m
@@ -147,12 +153,12 @@ processCommand ifMap (InterfaceChange i) m
 processCommand _ _ _ = logInfo "processCommand: could not parse command"
 
 subscribeCb :: IfMap -> MQ.Topic -> BL.ByteString -> [MQ.Property] -> MQTT ()
-subscribeCb ifMap t m _
-  | Just cmd <- parseTopic t
-  = unless (BL.null m)
-      do processCommand ifMap cmd m
-
-subscribeCb _ t _ _ = logInfo $ "subscribeCb: unknown topic " <> t
+subscribeCb ifMap t m _ = do
+  prefix <- L.view $ #appConfig . #mqttPrefix
+  case parseTopic prefix t of
+    Just cmd -> unless (BL.null m)
+                  do processCommand ifMap cmd m
+    Nothing -> logInfo $ "subscribeCb: unknown topic " <> t
 
 waitOnClient :: MQTT ()
 waitOnClient = L.view #mqttClient >>= liftIO . MQ.waitForClient

@@ -25,13 +25,16 @@ getCfg = makeConfig
                     , devicePath = "/dev/spidev0.1"
                     }
   ]
+  "relays"
   mqttBroker
 
   where
     pinnedFingerprint :: TLS.Fingerprint
     pinnedFingerprint = B64.decode "+RPIvEGOxsVt0a7wAty5UKo6+i3uE8JoM+7ystfUHcY=" ^?! L._Right . _Wrapped
 
-    serverID = ("boron.auenheim.kleen.org", "8883")
+    hostname = "boron.auenheim.kleen.org"
+    port = 8883
+    serverID = (hostname, show port)
 
     mqttBroker :: MQ.MQTTConfig
     mqttBroker =
@@ -47,8 +50,8 @@ getCfg = makeConfig
                 }
             }
         , MQ._protocol = MQ.Protocol50
-        , MQ._hostname = "boron.auenheim.kleen.org"
-        , MQ._port = 8883
+        , MQ._hostname = hostname
+        , MQ._port = port
         , MQ._connID = ""
         , MQ._username = Just "relayd"
         , MQ._password = Just "relayd"
