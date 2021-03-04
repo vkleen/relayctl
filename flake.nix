@@ -45,14 +45,14 @@
 
     pkgs = forAllSystems' (system: pkgs: pkgs.appendOverlays (overlays system));
 
-    pkgsCross = {
-      aarch64-multiplatform = forAllSystems' (system: pkgs: import pkgs.path {
+    pkgsCross = forAllSystems' (system: pkgs:
+      lib.mapAttrs (crossSystem: _: import pkgs.path {
         inherit system;
-        crossSystem = lib.systems.examples.aarch64-multiplatform;
+        crossSystem = lib.systems.examples."${crossSystem}";
         overlays = overlays system;
         crossOverlays = overlays system;
-      });
-    };
+      }) lib.systems.examples
+    );
 
     haskell' = p:
       p.haskell-nix.project {
@@ -91,12 +91,12 @@
   in {
     inherit devShell;
 
-    packages.x86_64-linux.relayctl = haskell."x86_64-linux".hsPkgs.relayctl.components.exes.relayctl;
-    packages.x86_64-linux.relayd = haskell."x86_64-linux".hsPkgs.relayctl.components.exes.relayd;
+    packages = forAllSystems (system: _: {
+      relayd = haskell."${system}".hsPkgs.relayctl.components.exes.relayd;
 
-    packages.x86_64-linux.cross.aarch64-multiplatform.relayd = (haskell' pkgsCross.aarch64-multiplatform.x86_64-linux).relayctl.components.exes.relayd;
-
-    packages.aarch64-linux.relayd = haskell."aarch64-linux".hsPkgs.relayctl.components.exes.relayd;
-    packages.aarch64-linux.relayctl = haskell."aarch64-linux".hsPkgs.relayctl.components.exes.relayctl;
+      cross = lib.mapAttrs (crossSystem: _: {
+        relayd = (haskell' pkgsCross."${system}"."${crossSystem}").relayctl.components.exes.relayd;
+      }) lib.systems.examples;
+    });
   };
 }
