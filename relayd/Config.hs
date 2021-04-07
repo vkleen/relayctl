@@ -2,6 +2,7 @@ module Config ( Config(..)
               , InterfaceConfig(..)
               , NonZeroFinite(..)
               , DeviceConfig(..)
+              , MQTTPrefix(..)
               , App
               , makeConfig
               , logInfo
@@ -19,10 +20,13 @@ import GHC.TypeLits
 
 import qualified Network.MQTT.Client as M
 
+newtype MQTTPrefix = MQTTPrefix Text
+  deriving (Generic, Show, Eq, NFData)
+
 data Config = Config
   { interfaces :: [InterfaceConfig]
   , mqttBroker :: M.MQTTConfig
-  , mqttPrefix :: Text
+  , mqttPrefix :: MQTTPrefix
   , doLogInfo :: Text -> App ()
   , doLogDebug :: Text -> App ()
   }
@@ -55,7 +59,7 @@ data DeviceConfig = DeviceConfig
 
 type App = ReaderT Config IO
 
-makeConfig :: [InterfaceConfig] -> Text -> M.MQTTConfig -> IO Config
+makeConfig :: [InterfaceConfig] -> MQTTPrefix -> M.MQTTConfig -> IO Config
 makeConfig ics prefix mqttBroker = do
   stdoutLogger <- newStdoutLoggerSet defaultBufSize
   pure . deepseq ics $

@@ -60,11 +60,15 @@
         sha256map = {
           "https://github.com/vkleen/spidev.git"."6a2ad9cd12ae04903ae3806d3dc76a3e855ad7ef" = "1z5wyimz8ppxcfx40lzm9j3nl94vj67skhidxz52wkqhv9iflwbm";
         };
-        pkg-def-extras = [
-        ];
         compiler-nix-name = "ghc8104";
-        materialized = ./materialized;
-        index-state = "2021-02-23T00:00:00Z";
+        # materialized = ./materialized;
+        # index-state = "2021-02-23T00:00:00Z";
+        modules = [
+          ({...}: {
+            packages.relayctl.components.exes.relayd.enableExecutableProfiling = true;
+            packages.relayctl.components.library.enableLibraryProfiling = true;
+          })
+        ];
       };
 
     haskell = forAllSystems (_: p: haskell' p);
@@ -80,6 +84,7 @@
           hpack = "latest";
           c2hs = "latest";
           ghcid = "latest";
+          fourmolu = "latest";
         };
         buildInputs = [
         ];

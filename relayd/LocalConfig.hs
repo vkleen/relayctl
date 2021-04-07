@@ -16,6 +16,17 @@ import Control.Lens.Operators hiding ((??))
 
 deriving instance Generic TLS.Fingerprint
 
+data DhallConfig = DhallConfig
+  { interfaces :: [InterfaceConfig]
+  , brokerHostname :: Text
+  , brokerPort :: Int
+  , brokerFingerprint :: Text
+  , brokerUid :: Text
+  , brokerPassword :: Text
+  , mqttPrefix :: MQTTPrefix
+  }
+  deriving (Generic, Show, NFData)
+
 getCfg :: IO Config
 getCfg = makeConfig
   [ InterfaceConfig { name = "rack"
@@ -25,7 +36,7 @@ getCfg = makeConfig
                     , devicePath = "/dev/spidev0.1"
                     }
   ]
-  "relays"
+  (MQTTPrefix "relays")
   mqttBroker
 
   where
