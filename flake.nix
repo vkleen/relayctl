@@ -2,7 +2,11 @@
   description = "relayd and relayctl";
 
   inputs = {
-    haskell-nix.url = "github:input-output-hk/haskell.nix";
+    nixpkgs.url = "github:NixOS/nixpkgs/master";
+    haskell-nix = {
+      url = "github:input-output-hk/haskell.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     stackageSrc = {
       url = "github:input-output-hk/stackage.nix";
       flake = false;
@@ -11,7 +15,10 @@
       url = "github:input-output-hk/hackage.nix";
       flake = false;
     };
-    flake-utils.url = "github:numtide/flake-utils";
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     spidev = {
       url = "github:vkleen/spidev";
@@ -29,7 +36,7 @@
       [ (haskell-nix.overlays.combined)
         (final: prev: {
           evalPackages = (import final.path {
-            overlays = [haskell-nix.overlays.combined-eval-on-build];
+            overlays = [haskell-nix.overlays.combined];
             localSystem = system;
           }).buildPackages;
         })
@@ -60,7 +67,7 @@
         sha256map = {
           "https://github.com/vkleen/spidev.git"."6a2ad9cd12ae04903ae3806d3dc76a3e855ad7ef" = "1z5wyimz8ppxcfx40lzm9j3nl94vj67skhidxz52wkqhv9iflwbm";
         };
-        compiler-nix-name = "ghc8104";
+        compiler-nix-name = "ghc8107";
         # materialized = ./materialized;
         # index-state = "2021-02-23T00:00:00Z";
         modules = [
